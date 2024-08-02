@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguards Fitness Program</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Vanguards Fitness Program</h1>
+    </header>
+    <main>
+        <section id="registration">
+            <h2>Student Registration</h2>
+            <form id="registration-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="student-number">Student Number:</label>
+                <input type="text" id="student-number" name="student-number" required>
+
+                <label for="year-level">Year Level:</label>
+                <input type="text" id="year-level" name="year-level" required>
+
+                <label for="section">Section:</label>
+                <input type="text" id="section" name="section" required>
+
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight" required>
+
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" name="height" required>
+
+                <label for="bmi">BMI:</label>
+                <input type="text" id="bmi" name="bmi" readonly>
+
+                <button type="submit">Register</button>
+                <p id="form-message"></p>
+            </form>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+
+main {
+    padding: 1em;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 0.5em;
+}
+
+input {
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input:invalid {
+    border-color: red;
+}
+
+button {
+    padding: 0.7em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#form-message {
+    margin-top: 1em;
+    color: green;
+    font-weight: bold;
+}
+
+document.getElementById('registration-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const studentNumber = document.getElementById('student-number').value;
+    const yearLevel = document.getElementById('year-level').value;
+    const section = document.getElementById('section').value;
+    const address = document.getElementById('address').value;
+    const age = document.getElementById('age').value;
+    const weight = document.getElementById('weight').value;
+    const height = document.getElementById('height').value;
+
+    if (name && studentNumber && yearLevel && section && address && age && weight && height) {
+        const bmi = calculateBMI(weight, height);
+
+        const studentProfile = {
+            name,
+            studentNumber,
+            yearLevel,
+            section,
+            address,
+            age,
+            weight,
+            height,
+            bmi
+        };
+
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        students.push(studentProfile);
+        localStorage.setItem('students', JSON.stringify(students));
+
+        document.getElementById('form-message').textContent = 'Student registered successfully!';
+        document.getElementById('form-message').style.color = 'green';
+        document.getElementById('registration-form').reset();
+        document.getElementById('bmi').value = '';
+    } else {
+        document.getElementById('form-message').textContent = 'Please fill in all fields correctly.';
+        document.getElementById('form-message').style.color = 'red';
+    }
+});
+
+document.getElementById('weight').addEventListener('input', updateBMI);
+document.getElementById('height').addEventListener('input', updateBMI);
+
+function updateBMI() {
+    const weight = document.getElementById('weight').value;
+    const height = document.getElementById('height').value;
+
+    if (weight && height) {
+        const bmi = calculateBMI(weight, height);
+        document.getElementById('bmi').value = bmi;
+    }
+}
+
+function calculateBMI(weight, height) {
+    height = height / 100; // Convert cm to meters
+    return (weight / (height * height)).toFixed(2);
+}
